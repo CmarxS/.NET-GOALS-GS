@@ -18,18 +18,18 @@
 
 # 📌 Índice
 
-- [Visão Geral](#visão-geral)
-- [Funcionalidades](#funcionalidades)
-- [Tecnologias](#tecnologias)
-- [Como Executar](#como-executar)
-- [Documentação da API](#documentação-da-api)
-- [Banco de Dados](#banco-de-dados)
-- [Testes](#testes)
-- [Segurança](#segurança)
-- [Arquitetura](#arquitetura)
-- [Estatísticas](#estatísticas)
-- [Fluxo de Uso Típico](#fluxo-de-uso-típico)
-- [Licença](#licença)
+- [Visão Geral](#-visão-geral)
+- [Funcionalidades](#-funcionalidades)
+- [Tecnologias](#-tecnologias)
+- [Como Executar](#-como-executar)
+- [Documentação da API](#-documentação-da-api)
+- [Banco de Dados](#-banco-de-dados)
+- [Testes](#-testes)
+- [Segurança](#-segurança)
+- [Arquitetura](#-arquitetura)
+- [Estatísticas](#-estatísticas)
+- [Fluxo de Uso Típico](#-fluxo-de-uso-típico)
+- [Licença](#-licença)
 
 ---
 
