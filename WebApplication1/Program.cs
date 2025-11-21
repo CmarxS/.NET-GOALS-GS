@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+Ôªøusing Microsoft.EntityFrameworkCore;
 using Serilog;
 using WebApplication1.Data;
 using WebApplication1.HealthChecks;
@@ -13,7 +13,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    Log.Information("Iniciando aplicaÁ„o");
+    Log.Information("Iniciando aplica√ß√£o");
 
     var builder = WebApplication.CreateBuilder(args);
 
@@ -45,10 +45,10 @@ c.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo
     {
             Title = "Future of Work API",
     Version = "v2",
-            Description = "API RESTful para gerenciamento de metas profissionais - O Futuro do Trabalho (Vers„o 2)"
+            Description = "API RESTful para gerenciamento de metas profissionais - O Futuro do Trabalho (Vers√£o 2)"
         });
         
-   // Configurar autenticaÁ„o por API Key no Swagger
+   // Configurar autentica√ß√£o por API Key no Swagger
         c.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
       {
         Description = "API Key needed to access the endpoints. X-API-Key: FiapGS2024SecureKey",
@@ -99,12 +99,12 @@ c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
 
     app.MapControllers();
 
-    // Obter URLs onde a aplicaÁ„o est· rodando
+    // Obter URLs onde a aplica√ß√£o est√° rodando
     var urls = builder.Configuration["ASPNETCORE_URLS"] ?? "http://localhost:5000;https://localhost:5001";
     
-    Log.Information("AplicaÁ„o iniciada com sucesso");
+    Log.Information("Aplica√ß√£o iniciada com sucesso");
  Log.Information("==================================================");
-    Log.Information("Swagger UI disponÌvel em:");
+    Log.Information("Swagger UI dispon√≠vel em:");
     foreach (var url in urls.Split(';'))
     {
         Log.Information("  {Url}", url);
@@ -113,9 +113,9 @@ c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     Log.Information("API Key: FiapGS2024SecureKey");
     Log.Information("==================================================");
     
-    // TambÈm imprimir no console diretamente
+    // Tamb√©m imprimir no console diretamente
     Console.WriteLine("\n==================================================");
-    Console.WriteLine("?? APLICA«√O INICIADA COM SUCESSO!");
+    Console.WriteLine("?? APLICA√á√ÉO INICIADA COM SUCESSO!");
     Console.WriteLine("==================================================");
     Console.WriteLine($"?? Swagger UI: {urls.Split(';')[0]}");
     Console.WriteLine($"?? Health Check: {urls.Split(';')[0]}/health");
@@ -126,7 +126,7 @@ c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "AplicaÁ„o falhou ao iniciar");
+    Log.Fatal(ex, "Aplica√ß√£o falhou ao iniciar");
     Console.WriteLine($"\n? ERRO: {ex.Message}\n");
 }
 finally
