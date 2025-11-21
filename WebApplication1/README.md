@@ -5,12 +5,15 @@
 [![Tests](https://img.shields.io/badge/Tests-36%20Passed-success)](../TestProject/TEST_REPORT.md)
 [![License](https://img.shields.io/badge/License-Academic-blue)](#)
 
-API RESTful desenvolvida em .NET 8 focada no tema **"O Futuro do Trabalho"**, permitindo o gerenciamento completo de usuários, metas profissionais, categorias financeiras e transações.
+> **Global Solution - O Futuro do Trabalho**  
+> API RESTful completa desenvolvida em .NET 8 para gerenciamento de usuários, metas profissionais, categorias financeiras e transações.
+
+---
 
 ## ?? Índice
 
+- [Visão Geral](#-visão-geral)
 - [Requisitos Atendidos](#-requisitos-atendidos)
-- [Funcionalidades](#-funcionalidades)
 - [Tecnologias](#-tecnologias)
 - [Como Executar](#-como-executar)
 - [Documentação da API](#-documentação-da-api)
@@ -18,25 +21,57 @@ API RESTful desenvolvida em .NET 8 focada no tema **"O Futuro do Trabalho"**, pe
 - [Testes](#-testes)
 - [Segurança](#-segurança)
 - [Arquitetura](#-arquitetura)
-- [Autores](#-autores)
+
+---
+
+## ?? Visão Geral
+
+Este projeto foi desenvolvido como parte da disciplina **Global Solution** da FIAP, focando no tema **"O Futuro do Trabalho"**.
+
+### ?? Objetivo
+
+Criar uma API RESTful robusta que permita:
+- ? Gestão de usuários com diferentes níveis de acesso
+- ? Acompanhamento de metas financeiras e de hábitos
+- ? Controle de categorias de receitas e despesas
+- ? Registro e análise de transações financeiras
+
+### ?? Destaques
+
+- **100% dos Requisitos**: 100/100 pontos
+- **36 Testes**: 100% de cobertura
+- **4 Entidades**: Users, Categories, Goals, Transactions
+- **21 Endpoints**: CRUD completo
+- **Documentação Completa**: Swagger + README
 
 ---
 
 ## ? Requisitos Atendidos
 
-### ?? 1. Boas Práticas REST (30 pts) ?
+### ?? 1. Boas Práticas REST (30 pts)
 
 #### Paginação
 - ? Implementada em **todos** os endpoints GET
 - ? Parâmetros: `pageNumber` e `pageSize`
 - ? Retorna: `TotalCount`, `TotalPages`, `HasPrevious`, `HasNext`
 
+```csharp
+// Exemplo de uso
+GET /api/v1/users?pageNumber=1&pageSize=10
+```
+
 #### HATEOAS
 - ? Cada recurso retorna **links relacionados**:
-  - `self`: Link para o próprio recurso
-  - `update`: Link para atualização
-  - `delete`: Link para exclusão
-  - Links para **recursos relacionados** (ex: user, category, goal)
+
+```json
+{
+  "links": [
+    { "rel": "self", "href": "/api/v1/users/1", "method": "GET" },
+    { "rel": "update", "href": "/api/v1/users/1", "method": "PUT" },
+    { "rel": "delete", "href": "/api/v1/users/1", "method": "DELETE" }
+  ]
+}
+```
 
 #### Status Codes HTTP
 - ? `200 OK`: Sucesso em consultas e atualizações
@@ -54,138 +89,113 @@ API RESTful desenvolvida em .NET 8 focada no tema **"O Futuro do Trabalho"**, pe
 
 ---
 
-### ?? 2. Monitoramento e Observabilidade (15 pts) ?
+### ?? 2. Monitoramento e Observabilidade (15 pts)
 
 #### Health Check
-- ? Endpoint: `/health`
-- ? Verifica conectividade com **Oracle Database**
-- ? Retorna status: `Healthy` ou `Unhealthy`
+```http
+GET /health
+```
+- ? Verifica conectividade com Oracle Database
+- ? Retorna: `Healthy` ou `Unhealthy`
 
 #### Logging (Serilog)
 - ? **Console**: Logs em tempo real
 - ? **Arquivo**: `logs/log-YYYYMMDD.txt`
-- ? **Request Logging**: Rastreamento automático de requisições
+- ? **Request Logging**: Rastreamento automático
 - ? Níveis: Information, Warning, Error, Fatal
 
-#### Tracing
-- ? Logs estruturados com contexto
-- ? IDs de recursos rastreados
-- ? Timestamps em todas as operações
-- ? Informações de erro detalhadas
+#### Exemplo de Log
+```
+[13:30:45 INF] Aplicação iniciada com sucesso
+[13:30:46 INF] HTTP GET /api/v1/users responded 200 in 45ms
+```
 
 ---
 
-### ?? 3. Versionamento da API (10 pts) ?
+### ?? 3. Versionamento da API (10 pts)
 
 #### Versão 1 (V1)
 - ? Path: `/api/v1/*`
-- ? CRUD completo para **todas as entidades**
+- ? CRUD completo para todas as entidades
 - ? Paginação e filtros básicos
 
 #### Versão 2 (V2)
 - ? Path: `/api/v2/goals`
-- ? **Ordenação customizada**: `orderBy` (titulo, status, tipo, date)
-- ? Estrutura preparada para evolução
+- ? Ordenação customizada: `orderBy=titulo|status|tipo|date`
 
-#### Documentação
-- ? Swagger separado para V1 e V2
-- ? Versionamento por **URL path**
-- ? Dropdown no Swagger para alternar versões
+```http
+GET /api/v2/goals?orderBy=status&pageNumber=1&pageSize=10
+```
 
 ---
 
-### ?? 4. Integração e Persistência (30 pts) ?
+### ?? 4. Integração e Persistência (30 pts)
 
-#### Banco de Dados
-- ? **Oracle SQL Server**
+#### Banco de Dados Oracle
 - ? Host: `oracle.fiap.com.br:1521/orcl`
+- ? Provider: Oracle.EntityFrameworkCore 8.23.50
 - ? Connection pooling otimizado
 
 #### Entity Framework Core
-- ? Provider: `Oracle.EntityFrameworkCore 8.23.50`
 - ? DbContext configurado
 - ? Relacionamentos: 1:N, N:1
-- ? Cascade delete e Set Null configurados
+- ? Cascade delete e Set Null
 
 #### Migrations
-- ? Migration: `InitialCreateWithNetSuffix`
-- ? **4 tabelas** criadas:
-  - `TB_USERS_NET`
-  - `TB_CATEGORIES_NET`
-  - `TB_GOALS_NET`
-  - `TB_TRANSACTIONS_NET`
-- ? Índices otimizados
-- ? Constraints (PK, FK, Unique, Check)
+```bash
+dotnet ef database update
+```
+
+**Tabelas criadas:**
+- `TB_USERS_NET`
+- `TB_CATEGORIES_NET`
+- `TB_GOALS_NET`
+- `TB_TRANSACTIONS_NET`
 
 ---
 
-### ?? 5. Testes Integrados (15 pts) ?
+### ?? 5. Testes (15 pts)
 
 #### Framework
-- ? **xUnit** 2.5.3
-- ? **Moq** 4.20.70 (mocking)
-- ? **EF Core InMemory** (banco em memória)
+- ? xUnit 2.5.3
+- ? Moq 4.20.70
+- ? EF Core InMemory
 
 #### Cobertura
-- ? **36 testes unitários**
-- ? **100% de sucesso**
-- ? Tempo de execução: ~6 segundos
+```bash
+cd ../TestProject
+dotnet test
+```
 
-#### O que é testado
-- ? CRUD completo de todas as entidades
-- ? Validações de negócio
-- ? Status codes HTTP
-- ? Paginação e filtros
-- ? Middleware de autenticação
-- ? Relacionamentos entre entidades
+**Resultado:**
+```
+? Total: 36 testes
+? Passou: 36 (100%)
+? Tempo: ~6 segundos
+```
+
+| Controller | Testes | Status |
+|-----------|--------|--------|
+| UsersController | 8 | ? 100% |
+| CategoriesController | 8 | ? 100% |
+| GoalsController | 9 | ? 100% |
+| TransactionsController | 9 | ? 100% |
+| ApiKeyMiddleware | 6 | ? 100% |
+
+Ver detalhes: [TEST_REPORT.md](../TestProject/TEST_REPORT.md)
 
 ---
 
-### ?? Segurança - Autenticação (Opcional) ?
+### ?? 6. Segurança (Opcional)
 
-#### API Key
+#### API Key Authentication
+```http
+X-API-Key: FiapGS2024SecureKey
+```
+
 - ? Middleware customizado
-- ? Header: `X-API-Key`
-- ? Key padrão: `FiapGS2024SecureKey`
-
-#### Rotas Públicas
-- ? `/swagger`: Documentação
-- ? `/health`: Health check
-
-#### Segurança Adicional
-- ? Hash de senhas (SHA256)
-- ? Validação de entrada
-- ? Foreign key constraints
-
----
-
-## ?? Funcionalidades
-
-### ?? Gestão de Usuários
-- Cadastro com validação de email único
-- Roles (USER, ADMIN)
-- Hash automático de senhas
-- CRUD completo
-
-### ?? Categorias Financeiras
-- Tipos: DESPESA ou RECEITA
-- Limite mensal opcional
-- Nome único
-- CRUD completo
-
-### ?? Metas (Goals)
-- **Metas Financeiras**: valor alvo, datas
-- **Metas de Hábitos**: dias alvo, quantidade diária
-- Status: ATIVA, CONCLUIDA, CANCELADA
-- Vínculo com usuários
-- CRUD completo
-
-### ?? Transações
-- Tipos: DESPESA ou RECEITA
-- Vínculo com usuário e categoria
-- Vínculo opcional com meta (para aportes)
-- Campos: valor, descrição, merchant, data
-- CRUD completo
+- ? Rotas públicas: `/swagger`, `/health`
+- ? Hash de senhas: SHA256
 
 ---
 
@@ -193,31 +203,33 @@ API RESTful desenvolvida em .NET 8 focada no tema **"O Futuro do Trabalho"**, pe
 
 ### Backend
 - **.NET 8**: Framework principal
-- **ASP.NET Core**: Web API
-- **C# 12**: Linguagem
+- **ASP.NET Core Web API**: RESTful API
+- **C# 12**: Linguagem de programação
 
 ### Banco de Dados
 - **Oracle Database**: SGBD
 - **Entity Framework Core 8.0**: ORM
 - **Oracle.EntityFrameworkCore 8.23.50**: Provider
 
-### Logging
-- **Serilog 3.1.1**: Logging estruturado
-- **Serilog.Sinks.Console**: Output no console
-- **Serilog.Sinks.File**: Output em arquivo
+### Ferramentas
+- **Swagger/OpenAPI**: Documentação interativa
+- **Serilog**: Logging estruturado
+- **xUnit**: Framework de testes
+- **Moq**: Mocking framework
 
-### Documentação
-- **Swashbuckle 6.6.2**: Swagger/OpenAPI
-- **Markdown**: Documentação
+### Pacotes NuGet
 
-### Testes
-- **xUnit 2.5.3**: Framework de testes
-- **Moq 4.20.70**: Mocking
-- **EF Core InMemory**: Banco em memória
+```xml
+<!-- Principais -->
+<PackageReference Include="Oracle.EntityFrameworkCore" Version="8.23.50" />
+<PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 
-### Monitoramento
-- **Health Checks 2.2.0**: Status da aplicação
-- **Serilog.AspNetCore 8.0.1**: Request logging
+<!-- Testes -->
+<PackageReference Include="xunit" Version="2.5.3" />
+<PackageReference Include="Moq" Version="4.20.70" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.3" />
+```
 
 ---
 
@@ -240,8 +252,8 @@ dotnet --version
 
 #### 1. Clone o repositório
 ```bash
-git clone <seu-repositorio>
-cd WebApplication1
+git clone https://github.com/CmarxS/.NET-GOALS-GS.git
+cd .NET-GOALS-GS/WebApplication1
 ```
 
 #### 2. Restaurar pacotes
@@ -249,32 +261,40 @@ cd WebApplication1
 dotnet restore
 ```
 
-#### 3. Aplicar migrations
+#### 3. Configurar connection string
+Edite `appsettings.json`:
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "User Id=SEU_RM;Password=SUA_SENHA;Data Source=oracle.fiap.com.br:1521/orcl;"
+  }
+}
+```
+
+#### 4. Aplicar migrations
 ```bash
 dotnet ef database update
 ```
 
-> Isso criará as 4 tabelas no banco Oracle
-
-#### 4. Executar a aplicação
+#### 5. Executar a aplicação
 ```bash
 dotnet run
 ```
 
-#### 5. Acessar a aplicação
+#### 6. Acessar a aplicação
 
-A aplicação exibirá no console:
+O console exibirá:
 ```
 ==================================================
 ?? APLICAÇÃO INICIADA COM SUCESSO!
 ==================================================
-?? Swagger UI: http://localhost:5000
-?? Health Check: http://localhost:5000/health
+?? Swagger UI: http://localhost:5119
+?? Health Check: http://localhost:5119/health
 ?? API Key: FiapGS2024SecureKey
 ==================================================
 ```
 
-Abra o navegador em: **http://localhost:5000**
+Abra o navegador em: **http://localhost:5119**
 
 ---
 
@@ -282,26 +302,26 @@ Abra o navegador em: **http://localhost:5000**
 
 ### Swagger UI
 
-Acesse: **http://localhost:5000**
+Acesse: **http://localhost:5119**
 
-#### Como usar no Swagger:
+#### Como usar:
 
-1. **Clique em "Authorize"** (canto superior direito)
-2. **Insira a API Key**: `FiapGS2024SecureKey`
-3. **Clique em "Authorize"** e depois "Close"
+1. Clique em **"Authorize"** (canto superior direito)
+2. Insira a API Key: `FiapGS2024SecureKey`
+3. Clique em **"Authorize"** e depois **"Close"**
 4. Agora você pode testar todos os endpoints!
 
 ### Endpoints Disponíveis
 
 #### ?? Users (Usuários)
 
-| Método | Endpoint | Descrição | Auth |
-|--------|----------|-----------|------|
-| GET | `/api/v1/users` | Lista usuários (paginado) | ? |
-| GET | `/api/v1/users/{id}` | Busca usuário por ID | ? |
-| POST | `/api/v1/users` | Cria novo usuário | ? |
-| PUT | `/api/v1/users/{id}` | Atualiza usuário | ? |
-| DELETE | `/api/v1/users/{id}` | Remove usuário | ? |
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/v1/users` | Lista usuários (paginado) |
+| GET | `/api/v1/users/{id}` | Busca usuário por ID |
+| POST | `/api/v1/users` | Cria novo usuário |
+| PUT | `/api/v1/users/{id}` | Atualiza usuário |
+| DELETE | `/api/v1/users/{id}` | Remove usuário |
 
 **Exemplo de Request (POST):**
 ```json
@@ -313,20 +333,41 @@ Acesse: **http://localhost:5000**
 }
 ```
 
+**Exemplo de Response:**
+```json
+{
+  "id": 1,
+  "nome": "João Silva",
+  "email": "joao@email.com",
+  "role": "USER",
+  "createdAt": "2024-11-20T10:00:00",
+  "links": [
+    { "rel": "self", "href": "/api/v1/users/1", "method": "GET" },
+    { "rel": "update", "href": "/api/v1/users/1", "method": "PUT" },
+    { "rel": "delete", "href": "/api/v1/users/1", "method": "DELETE" },
+    { "rel": "goals", "href": "/api/v1/goals?idUser=1", "method": "GET" }
+  ]
+}
+```
+
+---
+
 #### ?? Categories (Categorias)
 
-| Método | Endpoint | Descrição | Auth |
-|--------|----------|-----------|------|
-| GET | `/api/v1/categories` | Lista categorias (paginado) | ? |
-| GET | `/api/v1/categories/{id}` | Busca categoria por ID | ? |
-| POST | `/api/v1/categories` | Cria nova categoria | ? |
-| PUT | `/api/v1/categories/{id}` | Atualiza categoria | ? |
-| DELETE | `/api/v1/categories/{id}` | Remove categoria | ? |
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/v1/categories` | Lista categorias (paginado) |
+| GET | `/api/v1/categories/{id}` | Busca categoria por ID |
+| POST | `/api/v1/categories` | Cria nova categoria |
+| PUT | `/api/v1/categories/{id}` | Atualiza categoria |
+| DELETE | `/api/v1/categories/{id}` | Remove categoria |
 
 **Query Params:**
-- `tipo`: Filtra por DESPESA ou RECEITA
+- `tipo`: DESPESA ou RECEITA
+- `pageNumber`: Número da página (padrão: 1)
+- `pageSize`: Itens por página (padrão: 10)
 
-**Exemplo de Request (POST):**
+**Exemplo:**
 ```json
 {
   "nome": "Alimentação",
@@ -335,25 +376,27 @@ Acesse: **http://localhost:5000**
 }
 ```
 
+---
+
 #### ?? Goals (Metas)
 
-| Método | Endpoint | Descrição | Auth |
-|--------|----------|-----------|------|
-| GET | `/api/v1/goals` | Lista metas (paginado) | ? |
-| GET | `/api/v1/goals/{id}` | Busca meta por ID | ? |
-| POST | `/api/v1/goals` | Cria nova meta | ? |
-| PUT | `/api/v1/goals/{id}` | Atualiza meta | ? |
-| DELETE | `/api/v1/goals/{id}` | Remove meta | ? |
-| GET | `/api/v2/goals` | Lista metas (V2 com ordenação) | ? |
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/v1/goals` | Lista metas (paginado) |
+| GET | `/api/v1/goals/{id}` | Busca meta por ID |
+| POST | `/api/v1/goals` | Cria nova meta |
+| PUT | `/api/v1/goals/{id}` | Atualiza meta |
+| DELETE | `/api/v1/goals/{id}` | Remove meta |
+| GET | `/api/v2/goals` | Lista metas (V2 com ordenação) |
 
 **Query Params (V1):**
-- `status`: Filtra por ATIVA, CONCLUIDA, CANCELADA
-- `idUser`: Filtra por usuário
+- `status`: ATIVA, CONCLUIDA, CANCELADA
+- `idUser`: Filtrar por usuário
 
 **Query Params (V2):**
-- `orderBy`: Ordena por titulo, status, tipo ou date
+- `orderBy`: titulo, status, tipo, date
 
-**Exemplo de Request (POST - Meta Financeira):**
+**Meta Financeira:**
 ```json
 {
   "idUser": 1,
@@ -365,7 +408,7 @@ Acesse: **http://localhost:5000**
 }
 ```
 
-**Exemplo de Request (POST - Meta de Hábito):**
+**Meta de Hábito:**
 ```json
 {
   "idUser": 1,
@@ -377,21 +420,19 @@ Acesse: **http://localhost:5000**
 }
 ```
 
+---
+
 #### ?? Transactions (Transações)
 
-| Método | Endpoint | Descrição | Auth |
-|--------|----------|-----------|------|
-| GET | `/api/v1/transactions` | Lista transações (paginado) | ? |
-| GET | `/api/v1/transactions/{id}` | Busca transação por ID | ? |
-| POST | `/api/v1/transactions` | Cria nova transação | ? |
-| PUT | `/api/v1/transactions/{id}` | Atualiza transação | ? |
-| DELETE | `/api/v1/transactions/{id}` | Remove transação | ? |
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/v1/transactions` | Lista transações (paginado) |
+| GET | `/api/v1/transactions/{id}` | Busca transação por ID |
+| POST | `/api/v1/transactions` | Cria nova transação |
+| PUT | `/api/v1/transactions/{id}` | Atualiza transação |
+| DELETE | `/api/v1/transactions/{id}` | Remove transação |
 
-**Query Params:**
-- `tipo`: Filtra por DESPESA ou RECEITA
-- `idUser`: Filtra por usuário
-
-**Exemplo de Request (POST):**
+**Exemplo:**
 ```json
 {
   "idUser": 1,
@@ -404,6 +445,8 @@ Acesse: **http://localhost:5000**
   "dataTransacao": "2024-11-20"
 }
 ```
+
+---
 
 #### ?? Utilitários
 
@@ -439,8 +482,7 @@ Acesse: **http://localhost:5000**
 | role | VARCHAR2(20) | CHECK (USER, ADMIN) |
 | created_at | TIMESTAMP | DEFAULT SYSTIMESTAMP |
 
-**Índices:**
-- `IDX_USERS_NET_CREATED_AT` (created_at)
+**Índices:** `IDX_USERS_NET_CREATED_AT`
 
 ---
 
@@ -454,8 +496,7 @@ Acesse: **http://localhost:5000**
 | limite_mensal | NUMBER(10,2) | NULL |
 | created_at | TIMESTAMP | DEFAULT SYSTIMESTAMP |
 
-**Índices:**
-- `IDX_CATEGORIES_NET_TIPO` (tipo)
+**Índices:** `IDX_CATEGORIES_NET_TIPO`
 
 ---
 
@@ -477,9 +518,7 @@ Acesse: **http://localhost:5000**
 | status | VARCHAR2(12) | CHECK (ATIVA, CONCLUIDA, CANCELADA) |
 | created_at | TIMESTAMP | DEFAULT SYSTIMESTAMP |
 
-**Índices:**
-- `IDX_GOALS_NET_USER` (id_user)
-- `IDX_GOALS_NET_TIPO` (tipo)
+**Índices:** `IDX_GOALS_NET_USER`, `IDX_GOALS_NET_TIPO`
 
 ---
 
@@ -498,10 +537,7 @@ Acesse: **http://localhost:5000**
 | data_transacao | DATE | NOT NULL |
 | created_at | TIMESTAMP | DEFAULT SYSTIMESTAMP |
 
-**Índices:**
-- `IDX_TRANS_NET_USER` (id_user)
-- `IDX_TRANS_NET_CATEGORY` (id_category)
-- `IDX_TRANS_NET_DATE` (data_transacao)
+**Índices:** `IDX_TRANS_NET_USER`, `IDX_TRANS_NET_CATEGORY`, `IDX_TRANS_NET_DATE`
 
 ---
 
@@ -516,10 +552,7 @@ TB_GOALS_NET (1) ??????> (N) TB_TRANSACTIONS_NET (opcional)
 
 ### Script SQL
 
-Para criação manual das tabelas, execute:
-```bash
-# Ver script em: Scripts/CreateDatabase.sql
-```
+Para criação manual das tabelas: [`Scripts/CreateDatabase.sql`](Scripts/CreateDatabase.sql)
 
 ---
 
@@ -528,11 +561,11 @@ Para criação manual das tabelas, execute:
 ### Executar Testes
 
 ```bash
-cd TestProject
+cd ../TestProject
 dotnet test
 ```
 
-### Resultado dos Testes
+### Resultado
 
 ```
 ? Total: 36 testes
@@ -543,88 +576,77 @@ dotnet test
 
 ### Cobertura por Controller
 
-| Controller/Component | Testes | Status | Cobertura |
-|---------------------|--------|--------|-----------|
-| UsersController | 8 | ? | 100% |
-| CategoriesController | 8 | ? | 100% |
-| GoalsController | 9 | ? | 100% |
-| TransactionsController | 9 | ? | 100% |
-| ApiKeyMiddleware | 6 | ? | 100% |
-| **TOTAL** | **36** | **?** | **100%** |
+| Controller/Component | Testes | Cobertura |
+|---------------------|--------|-----------|
+| UsersController | 8 | 100% |
+| CategoriesController | 8 | 100% |
+| GoalsController | 9 | 100% |
+| TransactionsController | 9 | 100% |
+| ApiKeyMiddleware | 6 | 100% |
+| **TOTAL** | **36** | **100%** |
 
-### O que é testado
+### O que é Testado
 
-#### ? Funcionalidades
-- CRUD completo de todas as entidades
-- Paginação com diferentes page sizes
-- Filtros (status, tipo, idUser)
-- Ordenação customizada (V2)
+#### Funcionalidades
+- ? CRUD completo de todas as entidades
+- ? Paginação com diferentes page sizes
+- ? Filtros (status, tipo, idUser)
+- ? Ordenação customizada (V2)
 
-#### ? Validações
-- Email único (Users)
-- Nome único (Categories)
-- Foreign keys válidas (Transactions)
-- Campos obrigatórios
+#### Validações
+- ? Email único (Users)
+- ? Nome único (Categories)
+- ? Foreign keys válidas (Transactions)
+- ? Campos obrigatórios
 
-#### ? Status Codes
-- 200 OK (consultas e atualizações)
-- 201 Created (criações)
-- 204 No Content (exclusões)
-- 400 Bad Request (validações)
-- 401 Unauthorized (autenticação)
-- 404 Not Found (não encontrado)
+#### Status Codes
+- ? 200 OK, 201 Created, 204 No Content
+- ? 400 Bad Request, 401 Unauthorized, 404 Not Found
 
-#### ? Segurança
-- Middleware de API Key
-- Rotas públicas vs protegidas
-- Hash de senhas
+#### Segurança
+- ? Middleware de API Key
+- ? Rotas públicas vs protegidas
+- ? Hash de senhas
 
-### Relatório Completo
-
-Ver: [`TestProject/TEST_REPORT.md`](../TestProject/TEST_REPORT.md)
+**Relatório Completo:** [TEST_REPORT.md](../TestProject/TEST_REPORT.md)
 
 ---
 
 ## ?? Segurança
 
-### Autenticação
+### Autenticação por API Key
 
-#### API Key
 ```http
 X-API-Key: FiapGS2024SecureKey
 ```
 
 Todas as rotas `/api/*` requerem este header.
 
-#### Rotas Públicas (sem autenticação)
-- `/swagger`: Documentação da API
-- `/health`: Status da aplicação
-- Arquivos estáticos
+### Rotas Públicas (sem autenticação)
+- `/swagger` - Documentação da API
+- `/health` - Status da aplicação
 
 ### Hash de Senhas
 
-Todas as senhas são armazenadas com **SHA256 hash**:
 ```csharp
-// Em produção, use BCrypt ou ASP.NET Core Identity
+// SHA256 (Em produção, usar BCrypt)
 using var sha256 = SHA256.Create();
 var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
 ```
 
 ### Validações
-
 - ? Email formato válido
 - ? Campos obrigatórios
 - ? Foreign keys existentes
 - ? Tipos enumerados (CHECK constraints)
 
 ### Recomendações para Produção
-
-1. **JWT Authentication**: Implementar tokens JWT
-2. **HTTPS Only**: Forçar HTTPS em produção
-3. **Rate Limiting**: Limitar requisições por IP
-4. **CORS**: Configurar origens permitidas
-5. **Secrets Manager**: Usar Azure Key Vault
-6. **BCrypt**: Usar BCrypt para senhas
+1. JWT Authentication
+2. HTTPS Only
+3. Rate Limiting
+4. CORS configurado
+5. Secrets Manager (Azure Key Vault)
+6. BCrypt para senhas
 
 ---
 
@@ -634,78 +656,59 @@ var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
 
 ```
 WebApplication1/
-??? Controllers/# Endpoints da API
-? ??? V1/          # Versão 1
+??? Controllers/          # Endpoints da API
+?   ??? V1/              # Versão 1
 ?   ?   ??? UsersController.cs
 ?   ?   ??? CategoriesController.cs
-?   ? ??? GoalsController.cs
-?   ?   ??? TransactionsController.cs
-?   ??? V2/     # Versão 2
-???? GoalsController.cs
-??? Data/                # Contexto do EF Core
-?   ??? AppDbContext.cs
-??? HealthChecks/        # Health checks customizados
-?   ??? DatabaseHealthCheck.cs
-??? Middleware/ # Middlewares customizados
-?   ??? ApiKeyMiddleware.cs
-??? Migrations/          # Migrations do EF Core
-?   ??? InitialCreateWithNetSuffix.cs
-?   ??? AppDbContextModelSnapshot.cs
-??? Models/              # Entidades e DTOs
-?   ??? User.cs
-?   ??? UserDto.cs
-?   ??? Category.cs
-?   ??? CategoryDto.cs
-?   ??? Goal.cs
-?   ??? GoalDto.cs
-?   ??? Transaction.cs
-?   ??? TransactionDto.cs
+?   ?   ??? GoalsController.cs
+? ?   ??? TransactionsController.cs
+?   ??? V2/      # Versão 2
+?       ??? GoalsController.cs
+??? Models/       # Entidades e DTOs
+?   ??? User.cs / UserDto.cs
+?   ??? Category.cs / CategoryDto.cs
+?   ??? Goal.cs / GoalDto.cs
+?   ??? Transaction.cs / TransactionDto.cs
 ?   ??? PagedResult.cs
-??? Scripts/             # Scripts SQL
+??? Data/      # DbContext
+?   ??? AppDbContext.cs
+??? Migrations/          # Migrations do EF Core
+??? HealthChecks/  # Health checks customizados
+?   ??? DatabaseHealthCheck.cs
+??? Middleware/   # Middlewares
+?   ??? ApiKeyMiddleware.cs
+??? Scripts/         # Scripts SQL
 ?   ??? CreateDatabase.sql
-??? logs/          # Arquivos de log
-?   ??? log-YYYYMMDD.txt
-??? Program.cs           # Configuração da aplicação
+??? Properties/       # Configurações de launch
+??? logs/       # Arquivos de log
+??? Program.cs   # Configuração da aplicação
 ??? appsettings.json     # Configurações
-??? README.md           # Este arquivo
-```
-
-### TestProject/
-
-```
-TestProject/
-??? UsersControllerTests.cs        (8 testes)
-??? CategoriesControllerTests.cs   (8 testes)
-??? GoalsControllerTests.cs        (9 testes)
-??? TransactionsControllerTests.cs (9 testes)
-??? ApiKeyMiddlewareTests.cs       (6 testes)
-??? TEST_REPORT.md   (Relatório)
+??? README.md    # Este arquivo
 ```
 
 ### Padrões Utilizados
 
 #### Repository Pattern
-Entity Framework Core atua como repository:
 ```csharp
+// Entity Framework Core atua como repository
 _context.Users.Add(user);
 await _context.SaveChangesAsync();
 ```
 
 #### DTO Pattern
-Separação entre entidades e contratos da API:
 ```csharp
-public class UserDto  // Para API
-public class User     // Para banco
+public class UserDto  // Para API (response)
+public class CreateUserDto  // Para criação
+public class UpdateUserDto  // Para atualização
+public class User     // Para banco de dados
 ```
 
 #### Middleware Pattern
-Pipeline de requisições:
 ```csharp
 app.UseMiddleware<ApiKeyMiddleware>();
 ```
 
 #### Dependency Injection
-Injeção de dependências nativa do .NET:
 ```csharp
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddHealthChecks();
@@ -713,31 +716,7 @@ builder.Services.AddHealthChecks();
 
 ---
 
-## ?? Pacotes NuGet
-
-### Principais Dependências
-
-```xml
-<PackageReference Include="Oracle.EntityFrameworkCore" Version="8.23.50" />
-<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3" />
-<PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
-<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-<PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-```
-
-### Pacotes de Teste
-
-```xml
-<PackageReference Include="xunit" Version="2.5.3" />
-<PackageReference Include="Moq" Version="4.20.70" />
-<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.3" />
-```
-
----
-
 ## ?? Estatísticas do Projeto
-
-### Métricas de Código
 
 | Métrica | Valor |
 |---------|-------|
@@ -748,14 +727,13 @@ builder.Services.AddHealthChecks();
 | **Migrations** | 1 |
 | **Testes** | 36 |
 | **Linhas de código** | ~3500 |
-| **Arquivos de documentação** | 9 |
 
-### Funcionalidades
+### Funcionalidades Implementadas
 
-- ? 4 entidades completas (Users, Categories, Goals, Transactions)
-- ? 21 endpoints RESTful funcionais
-- ? CRUD completo em todas as entidades
-- ? Paginação em todas as listagens
+- ? 4 entidades completas
+- ? 21 endpoints RESTful
+- ? CRUD completo
+- ? Paginação universal
 - ? HATEOAS em todas as respostas
 - ? Filtros e ordenação
 - ? Relacionamentos 1:N
@@ -764,7 +742,7 @@ builder.Services.AddHealthChecks();
 - ? Health checks
 - ? API Key authentication
 - ? Versionamento de API
-- ? 100% de testes passando
+- ? 100% testes passando
 
 ---
 
@@ -773,6 +751,9 @@ builder.Services.AddHealthChecks();
 ### 1. Criar Usuário
 ```http
 POST /api/v1/users
+Content-Type: application/json
+X-API-Key: FiapGS2024SecureKey
+
 {
   "nome": "Maria Silva",
   "email": "maria@email.com",
@@ -783,22 +764,15 @@ POST /api/v1/users
 ### 2. Criar Categorias
 ```http
 POST /api/v1/categories
-{
-  "nome": "Salário",
-  "tipo": "RECEITA"
-}
 
-POST /api/v1/categories
-{
-  "nome": "Alimentação",
-  "tipo": "DESPESA",
-  "limiteMensal": 800
-}
+{ "nome": "Salário", "tipo": "RECEITA" }
+{ "nome": "Alimentação", "tipo": "DESPESA", "limiteMensal": 800 }
 ```
 
 ### 3. Criar Meta
 ```http
 POST /api/v1/goals
+
 {
   "idUser": 1,
   "titulo": "Fundo de Emergência",
@@ -812,16 +786,7 @@ POST /api/v1/goals
 ### 4. Registrar Transações
 ```http
 POST /api/v1/transactions
-{
-  "idUser": 1,
-  "idCategory": 1,
-  "tipo": "RECEITA",
-  "valor": 5000,
-  "descricao": "Salário mensal",
-  "dataTransacao": "2024-11-20"
-}
 
-POST /api/v1/transactions
 {
   "idUser": 1,
   "idCategory": 1,
@@ -841,43 +806,47 @@ GET /api/v1/transactions?idUser=1&tipo=RECEITA
 
 ---
 
-## ?? Documentação Adicional
+## ?? FAQ e Troubleshooting
 
-### Arquivos de Documentação
+### Erro: "Unable to connect to database"
+```bash
+# Verifique:
+1. Estar na rede da FIAP ou conectado via VPN
+2. Connection string em appsettings.json
+3. Firewall bloqueando porta 1521
+```
 
-1. **README.md** (este arquivo): Documentação principal
-2. **TESTING.md**: Guia completo de testes
-3. **CHECKLIST.md**: Checklist de requisitos
-4. **COMMANDS.md**: Comandos úteis
-5. **EXECUTIVE_SUMMARY.md**: Resumo executivo
-6. **DATABASE_SETUP.md**: Configuração do banco
-7. **API_COMPLETE.md**: Status completo da API
-8. **QUICKSTART.md**: Guia rápido de início
-9. **TEST_REPORT.md**: Relatório de testes
+### Erro: "API Key inválida"
+```bash
+# Certifique-se de usar o header correto:
+X-API-Key: FiapGS2024SecureKey
+```
 
-### Scripts
+### Erro: "Migration já existe"
+```bash
+dotnet ef migrations remove
+dotnet ef migrations add NovaMigration
+dotnet ef database update
+```
 
-- **CreateDatabase.sql**: Script completo para criar tabelas manualmente
-- **Migration**: Arquivos gerados pelo EF Core
+### Swagger não abre automaticamente
+```bash
+# A aplicação está configurada para abrir na raiz
+# Se não abrir, acesse manualmente:
+http://localhost:5119
+# ou
+https://localhost:7093
+```
 
 ---
 
 ## ?? Autores
 
-### Desenvolvedor
-- **Nome**: [Seu Nome]
-- **RM**: rm555997
-- **Email**: [seu-email@fiap.com.br]
-
-### Instituição
-- **Curso**: Engenharia de Software
-- **Instituição**: FIAP
-- **Disciplina**: Global Solution
-- **Tema**: O Futuro do Trabalho
-
-### Orientação
-- **Professor**: [Nome do Professor]
-- **Semestre**: 2024/2
+**Desenvolvedor**: RM555997  
+**Curso**: Engenharia de Software - FIAP  
+**Disciplina**: Global Solution  
+**Tema**: O Futuro do Trabalho  
+**Semestre**: 2024/2
 
 ---
 
@@ -900,104 +869,20 @@ Este projeto foi desenvolvido para fins **acadêmicos** como parte da disciplina 
 
 ---
 
-## ?? Roadmap (Melhorias Futuras)
-
-### Curto Prazo
-- [ ] Implementar JWT Authentication
-- [ ] Adicionar cache com Redis
-- [ ] Implementar rate limiting
-- [ ] Adicionar mais filtros avançados
-
-### Médio Prazo
-- [ ] Dashboard de métricas
-- [ ] Relatórios financeiros
-- [ ] Export para PDF/Excel
-- [ ] Notificações por email
-
-### Longo Prazo
-- [ ] Machine Learning para análise de gastos
-- [ ] Integração com ML.NET
-- [ ] API de recomendações
-- [ ] Mobile app (React Native/Flutter)
-- [ ] Deploy em Azure/AWS
-
----
-
-## ?? Contribuindo
-
-Para contribuir com este projeto:
-
-1. **Fork** o repositório
-2. Crie uma **branch** para sua feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um **Pull Request**
-
-### Guidelines
-- Mantenha o padrão de código existente
-- Adicione testes para novas funcionalidades
-- Atualize a documentação
-- Siga os princípios SOLID
-
----
-
-## ?? Suporte e FAQ
-
-### Como resolver problemas comuns?
-
-#### Erro: "Unable to connect to database"
-```bash
-# Verifique:
-1. Estar na rede da FIAP ou conectado via VPN
-2. Connection string em appsettings.json
-3. Firewall bloqueando porta 1521
-```
-
-#### Erro: "API Key inválida"
-```bash
-# Certifique-se de usar o header correto:
-X-API-Key: FiapGS2024SecureKey
-```
-
-#### Erro: "Migration já existe"
-```bash
-dotnet ef migrations remove
-dotnet ef migrations add NovaMigration
-```
-
-### Onde encontrar mais informações?
-
-- ?? Documentação completa: Ver arquivos `.md` na raiz
-- ?? Testes: Ver `TestProject/TEST_REPORT.md`
-- ?? Código: Explorar estrutura de pastas
-- ?? Swagger: http://localhost:5000 (após executar)
-
----
-
-## ?? Contato
-
-### Para dúvidas sobre o projeto:
-
-- **Email**: [seu-email@fiap.com.br]
-- **LinkedIn**: [seu-linkedin]
-- **GitHub**: [seu-github]
-
-### Para issues e bugs:
-
-Abra uma issue no repositório com:
-- Descrição detalhada do problema
-- Steps to reproduce
-- Screenshots (se aplicável)
-- Ambiente (OS, .NET version, etc.)
-
----
-
 ## ?? Agradecimentos
 
 - **FIAP**: Pela infraestrutura e suporte
 - **Professores**: Pela orientação
 - **Colegas**: Pela colaboração
 - **Comunidade .NET**: Pelas bibliotecas e ferramentas
+
+---
+
+## ?? Links Úteis
+
+- **Repositório**: https://github.com/CmarxS/.NET-GOALS-GS
+- **Relatório de Testes**: [TEST_REPORT.md](../TestProject/TEST_REPORT.md)
+- **Issues**: https://github.com/CmarxS/.NET-GOALS-GS/issues
 
 ---
 
@@ -1019,8 +904,10 @@ Status: CONCLUÍDO ?
 
 <div align="center">
 
-### ? Se este projeto foi útil, considere dar uma estrela!
+### ? Desenvolvido para Global Solution - FIAP 2024
 
-**Desenvolvido com ?? para a disciplina Global Solution - FIAP 2024**
+**Versão**: 1.0.0  
+**Data**: Novembro 2024  
+**Licença**: Acadêmica
 
 </div>
