@@ -31,7 +31,6 @@ https://net-goals-gs.onrender.com
 - [Arquitetura](#-arquitetura)
 - [Estatísticas](#-estatísticas)
 - [Fluxo de Uso Típico](#-fluxo-de-uso-típico)
-- [Licença](#-licença)
 
 ---
 
@@ -121,12 +120,12 @@ dotnet run
 
 Swagger disponível em:
 
-👉 **http://localhost:5119**
+👉 **https://net-goals-gs.onrender.com/index.html**
 
 Para usar, adicione no header:
 
 ```
-X-API-Key: FiapGS2024SecureKey
+X-API-Key: FiapGS2025SecureKey
 ```
 
 ### Principais endpoints:
@@ -170,7 +169,7 @@ dotnet test
 
 ### API Key obrigatória:
 ```
-X-API-Key: FiapGS2024SecureKey
+X-API-Key: FiapGS2025SecureKey
 ```
 
 ### Rotas livres:
@@ -228,16 +227,9 @@ Padrões utilizados:
 
 ---
 
-# 📄 Licença
-
-Projeto acadêmico — uso permitido para estudo e portfólio.  
-Proibido uso comercial e plágio.
-
----
-
 <div align="center">
 
-### ✔ Projeto completo – Global Solution FIAP 2024  
+### ✔ Projeto completo – Global Solution FIAP 2025  
 **Versão:** 1.0.0
 
 </div>
