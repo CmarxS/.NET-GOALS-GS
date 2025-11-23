@@ -95,11 +95,15 @@ _logger.LogInformation("Criando nova categoria: {Nome}", createDto.Nome);
                 return BadRequest(ModelState);
           }
 
-   // Verificar se nome já existe
-  if (await _context.Categories.AnyAsync(c => c.Nome == createDto.Nome))
-     {
-    return BadRequest(new { message = "Categoria com este nome já existe" });
-     }
+   // Verificar se nome já existe - Oracle compatible
+            var existingCategory = await _context.Categories
+                .Where(c => c.Nome == createDto.Nome)
+ .FirstOrDefaultAsync();
+   
+            if (existingCategory != null)
+  {
+     return BadRequest(new { message = "Categoria com este nome já existe" });
+  }
 
             var category = new Category
   {
@@ -138,11 +142,16 @@ if (category == null)
 
    if (!string.IsNullOrEmpty(updateDto.Nome))
    {
-   if (await _context.Categories.AnyAsync(c => c.Nome == updateDto.Nome && c.Id != id))
-   {
-      return BadRequest(new { message = "Categoria com este nome já existe" });
-        }
-       category.Nome = updateDto.Nome;
+   // Verificar se nome já existe - Oracle compatible
+                var existingCategory = await _context.Categories
+     .Where(c => c.Nome == updateDto.Nome && c.Id != id)
+      .FirstOrDefaultAsync();
+                
+       if (existingCategory != null)
+     {
+            return BadRequest(new { message = "Categoria com este nome já existe" });
+     }
+      category.Nome = updateDto.Nome;
      }
 
    if (!string.IsNullOrEmpty(updateDto.Tipo))

@@ -103,46 +103,61 @@ return NotFound(new { message = $"Transação com ID {id} não encontrada" });
      if (!ModelState.IsValid)
        return BadRequest(ModelState);
 
-      // Validar usuário existe
-   if (!await _context.Users.AnyAsync(u => u.Id == createDto.IdUser))
-       return BadRequest(new { message = "Usuário não encontrado" });
+      // Validar usuário existe - Oracle compatible
+ var user = await _context.Users
+        .Where(u => u.Id == createDto.IdUser)
+     .FirstOrDefaultAsync();
+            
+  if (user == null)
+                return BadRequest(new { message = "Usuário não encontrado" });
 
-     // Validar categoria existe
-      if (!await _context.Categories.AnyAsync(c => c.Id == createDto.IdCategory))
-  return BadRequest(new { message = "Categoria não encontrada" });
+   // Validar categoria existe - Oracle compatible
+            var category = await _context.Categories
+ .Where(c => c.Id == createDto.IdCategory)
+           .FirstOrDefaultAsync();
+            
+   if (category == null)
+   return BadRequest(new { message = "Categoria não encontrada" });
 
-      // Validar meta existe (se fornecida)
- if (createDto.IdGoal.HasValue && !await _context.Goals.AnyAsync(g => g.Id == createDto.IdGoal))
-     return BadRequest(new { message = "Meta não encontrada" });
+    // Validar meta existe (se fornecida) - Oracle compatible
+       if (createDto.IdGoal.HasValue)
+            {
+   var goal = await _context.Goals
+ .Where(g => g.Id == createDto.IdGoal)
+            .FirstOrDefaultAsync();
+          
+         if (goal == null)
+           return BadRequest(new { message = "Meta não encontrada" });
+    }
 
             var transaction = new Transaction
-  {
+            {
      IdUser = createDto.IdUser,
-       IdCategory = createDto.IdCategory,
-     IdGoal = createDto.IdGoal,
-       Tipo = createDto.Tipo,
-    Valor = createDto.Valor,
-    Descricao = createDto.Descricao,
+    IdCategory = createDto.IdCategory,
+         IdGoal = createDto.IdGoal,
+   Tipo = createDto.Tipo,
+         Valor = createDto.Valor,
+     Descricao = createDto.Descricao,
   Merchant = createDto.Merchant,
-    DataTransacao = createDto.DataTransacao,
-  CreatedAt = DateTime.Now
- };
+         DataTransacao = createDto.DataTransacao,
+    CreatedAt = DateTime.Now
+          };
 
-    _context.Transactions.Add(transaction);
-   await _context.SaveChangesAsync();
+      _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
 
-   _logger.LogInformation("Transação criada com sucesso. ID: {Id}", transaction.Id);
+            _logger.LogInformation("Transação criada com sucesso. ID: {Id}", transaction.Id);
 
-// Recarregar com includes para DTO
-      transaction = await _context.Transactions
-   .Include(t => t.User)
-      .Include(t => t.Category)
-   .Include(t => t.Goal)
-       .FirstAsync(t => t.Id == transaction.Id);
+        // Recarregar com includes para DTO
+            transaction = await _context.Transactions
+     .Include(t => t.User)
+    .Include(t => t.Category)
+              .Include(t => t.Goal)
+          .FirstAsync(t => t.Id == transaction.Id);
 
-     var transactionDto = MapToDto(transaction);
-  return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transactionDto);
-   }
+            var transactionDto = MapToDto(transaction);
+       return CreatedAtAction(nameof(GetTransaction), new { id = transaction.Id }, transactionDto);
+    }
 
         /// <summary>
    /// Atualiza uma transação existente
@@ -168,16 +183,29 @@ return NotFound(new { message = $"Transação com ID {id} não encontrada" });
 
      if (updateDto.IdCategory.HasValue)
  {
-     if (!await _context.Categories.AnyAsync(c => c.Id == updateDto.IdCategory))
-   return BadRequest(new { message = "Categoria não encontrada" });
-     transaction.IdCategory = updateDto.IdCategory.Value;
+           // Validar categoria existe - Oracle compatible
+     var category = await _context.Categories
+   .Where(c => c.Id == updateDto.IdCategory)
+     .FirstOrDefaultAsync();
+              
+     if (category == null)
+     return BadRequest(new { message = "Categoria não encontrada" });
+             
+   transaction.IdCategory = updateDto.IdCategory.Value;
 }
 
-       if (updateDto.IdGoal.HasValue && !await _context.Goals.AnyAsync(g => g.Id == updateDto.IdGoal))
-    return BadRequest(new { message = "Meta não encontrada" });
-
-  if (updateDto.IdGoal.HasValue)
-    transaction.IdGoal = updateDto.IdGoal;
+       if (updateDto.IdGoal.HasValue)
+       {
+     // Validar meta existe - Oracle compatible
+       var goal = await _context.Goals
+      .Where(g => g.Id == updateDto.IdGoal)
+ .FirstOrDefaultAsync();
+            
+       if (goal == null)
+   return BadRequest(new { message = "Meta não encontrada" });
+                
+     transaction.IdGoal = updateDto.IdGoal;
+            }
 
      if (!string.IsNullOrEmpty(updateDto.Tipo))
     transaction.Tipo = updateDto.Tipo;

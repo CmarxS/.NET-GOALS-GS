@@ -101,38 +101,45 @@ namespace WebApplication1.Controllers.V1
             if (!ModelState.IsValid)
    return BadRequest(ModelState);
 
-   // Validar usuário existe (se fornecido)
-       if (createDto.IdUser.HasValue && !await _context.Users.AnyAsync(u => u.Id == createDto.IdUser))
-                return BadRequest(new { message = "Usuário não encontrado" });
+   // Validar usuário existe (se fornecido) - Oracle compatible
+       if (createDto.IdUser.HasValue)
+{
+       var user = await _context.Users
+          .Where(u => u.Id == createDto.IdUser)
+          .FirstOrDefaultAsync();
+ 
+   if (user == null)
+         return BadRequest(new { message = "Usuário não encontrado" });
+   }
 
-            var goal = new Goal
-            {
-        IdUser = createDto.IdUser,
-     Titulo = createDto.Titulo,
-Tipo = createDto.Tipo,
-  ValorAlvo = createDto.ValorAlvo,
-  DiasAlvo = createDto.DiasAlvo,
-        DiasConcluidos = 0,
-           QtdAlvoDiaria = createDto.QtdAlvoDiaria,
-                Unidade = createDto.Unidade,
-     DataInicio = createDto.DataInicio,
-       DataFim = createDto.DataFim,
-                Status = "ATIVA",
-      CreatedAt = DateTime.Now
-         };
+       var goal = new Goal
+      {
+      IdUser = createDto.IdUser,
+  Titulo = createDto.Titulo,
+      Tipo = createDto.Tipo,
+    ValorAlvo = createDto.ValorAlvo,
+       DiasAlvo = createDto.DiasAlvo,
+         DiasConcluidos = 0,
+         QtdAlvoDiaria = createDto.QtdAlvoDiaria,
+     Unidade = createDto.Unidade,
+       DataInicio = createDto.DataInicio,
+     DataFim = createDto.DataFim,
+    Status = "ATIVA",
+     CreatedAt = DateTime.Now
+      };
 
- _context.Goals.Add(goal);
-    await _context.SaveChangesAsync();
+        _context.Goals.Add(goal);
+  await _context.SaveChangesAsync();
 
-         _logger.LogInformation("Meta criada com sucesso. ID: {Id}", goal.Id);
+    _logger.LogInformation("Meta criada com sucesso. ID: {Id}", goal.Id);
 
-          // Recarregar com includes
-            goal = await _context.Goals
-  .Include(g => g.User)
-         .FirstAsync(g => g.Id == goal.Id);
+  // Recarregar com includes
+        goal = await _context.Goals
+       .Include(g => g.User)
+     .FirstAsync(g => g.Id == goal.Id);
 
-        var goalDto = MapToDto(goal);
-            return CreatedAtAction(nameof(GetGoal), new { id = goal.Id }, goalDto);
+            var goalDto = MapToDto(goal);
+       return CreatedAtAction(nameof(GetGoal), new { id = goal.Id }, goalDto);
         }
 
       /// <summary>

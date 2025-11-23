@@ -1,16 +1,16 @@
 # ?? Deploy no Render - Guia Completo
 
-## ?? Pré-requisitos
+## ?? Prï¿½-requisitos
 
 - Conta no [Render](https://render.com/) (gratuita)
-- Repositório GitHub público
-- Dockerfile criado (? já incluído no projeto)
+- Repositï¿½rio GitHub pï¿½blico
+- Dockerfile criado (? jï¿½ incluï¿½do no projeto)
 
 ---
 
 ## ?? Passo a Passo
 
-### 1. Preparar o Repositório
+### 1. Preparar o Repositï¿½rio
 
 #### a) Commit do Dockerfile
 ```bash
@@ -28,20 +28,25 @@ git push
 
 1. Acesse: https://dashboard.render.com/
 2. Clique em **"New +"** ? **"Web Service"**
-3. Conecte seu repositório GitHub:
+3. Conecte seu repositï¿½rio GitHub:
    - Autorize o Render a acessar sua conta GitHub
-   - Selecione o repositório: **`.NET-GOALS-GS`**
+   - Selecione o repositï¿½rio: **`.NET-GOALS-GS`**
 
-#### b) Configurações do Service
+#### b) Configuraï¿½ï¿½es do Service
 
 | Campo | Valor |
 |-------|-------|
 | **Name** | `future-work-api` |
-| **Region** | `Oregon (US West)` ou mais próximo |
+| **Region** | `Oregon (US West)` ou mais prï¿½ximo |
 | **Branch** | `main` |
-| **Root Directory** | `WebApplication1` |
+| **Root Directory** | *(deixe em branco)* âš ï¸ **IMPORTANTE** |
 | **Environment** | `Docker` |
 | **Instance Type** | `Free` |
+
+âš ï¸ **IMPORTANTE**: 
+- O **Root Directory** deve ficar **em branco** (ou usar `/`)
+- O Dockerfile estÃ¡ na raiz do repositÃ³rio
+- O Dockerfile jÃ¡ aponta para a pasta `WebApplication1/` internamente
 
 #### c) Build Command
 ```bash
@@ -57,21 +62,21 @@ git push
 
 ---
 
-### 3. Configurar Variáveis de Ambiente
+### 3. Configurar Variï¿½veis de Ambiente
 
-No painel do Render, vá em **"Environment"** e adicione:
+No painel do Render, vï¿½ em **"Environment"** e adicione:
 
-#### Variáveis Obrigatórias
+#### Variï¿½veis Obrigatï¿½rias
 
-| Key | Value | Descrição |
+| Key | Value | Descriï¿½ï¿½o |
 |-----|-------|-----------|
-| `ASPNETCORE_ENVIRONMENT` | `Production` | Ambiente de execução |
+| `ASPNETCORE_ENVIRONMENT` | `Production` | Ambiente de execuï¿½ï¿½o |
 | `ASPNETCORE_URLS` | `http://+:8080` | URL de bind |
-| `ConnectionStrings__DefaultConnection` | `User Id=rm555997;Password=090705;Data Source=oracle.fiap.com.br:1521/orcl;` | String de conexão Oracle |
+| `ConnectionStrings__DefaultConnection` | `User Id=rm555997;Password=090705;Data Source=oracle.fiap.com.br:1521/orcl;` | String de conexï¿½o Oracle |
 | `ApiSettings__ApiKey` | `FiapGS2024SecureKey` | API Key |
 
 **?? IMPORTANTE**: 
-- Use `__` (dois underscores) para separar níveis em variáveis de ambiente
+- Use `__` (dois underscores) para separar nï¿½veis em variï¿½veis de ambiente
 - Exemplo: `ConnectionStrings__DefaultConnection` = `appsettings.json ? ConnectionStrings:DefaultConnection`
 
 ---
@@ -80,7 +85,7 @@ No painel do Render, vá em **"Environment"** e adicione:
 
 1. Clique em **"Create Web Service"**
 2. Aguarde o build (pode levar 5-10 minutos na primeira vez)
-3. A URL será algo como: `https://future-work-api.onrender.com`
+3. A URL serï¿½ algo como: `https://future-work-api.onrender.com`
 
 ---
 
@@ -109,15 +114,15 @@ https://future-work-api.onrender.com
 
 ---
 
-## ?? Configurações Adicionais (Opcional)
+## ?? Configuraï¿½ï¿½es Adicionais (Opcional)
 
 ### Auto-Deploy
-? Já configurado! Render faz deploy automático a cada push na branch `main`
+? Jï¿½ configurado! Render faz deploy automï¿½tico a cada push na branch `main`
 
 ### Custom Domain (Plano Pago)
-1. Vá em **"Settings"** ? **"Custom Domain"**
-2. Adicione seu domínio
-3. Configure DNS conforme instruções
+1. Vï¿½ em **"Settings"** ? **"Custom Domain"**
+2. Adicione seu domï¿½nio
+3. Configure DNS conforme instruï¿½ï¿½es
 
 ### Logs
 Ver logs em tempo real:
@@ -131,24 +136,24 @@ Ver logs em tempo real:
 
 ### Problema: Build falha
 
-**Solução 1**: Verificar se o Dockerfile está no diretório correto
+**Soluï¿½ï¿½o 1**: Verificar se o Dockerfile estï¿½ no diretï¿½rio correto
 ```bash
 # Deve estar em: WebApplication1/Dockerfile
 ```
 
-**Solução 2**: Verificar logs de build no Render
+**Soluï¿½ï¿½o 2**: Verificar logs de build no Render
 
-### Problema: Aplicação não inicia
+### Problema: Aplicaï¿½ï¿½o nï¿½o inicia
 
-**Solução 1**: Verificar variáveis de ambiente
+**Soluï¿½ï¿½o 1**: Verificar variï¿½veis de ambiente
 - `ASPNETCORE_URLS` deve ser `http://+:8080`
 - Render usa a porta 8080 internamente
 
-**Solução 2**: Verificar logs de runtime
+**Soluï¿½ï¿½o 2**: Verificar logs de runtime
 
-### Problema: Erro de conexão com Oracle
+### Problema: Erro de conexï¿½o com Oracle
 
-**Solução**: Verificar se a connection string está correta
+**Soluï¿½ï¿½o**: Verificar se a connection string estï¿½ correta
 ```bash
 # Formato correto:
 User Id=SEU_RM;Password=SUA_SENHA;Data Source=oracle.fiap.com.br:1521/orcl;
@@ -156,33 +161,33 @@ User Id=SEU_RM;Password=SUA_SENHA;Data Source=oracle.fiap.com.br:1521/orcl;
 
 ### Problema: Health check falha
 
-**Solução**: Verificar se `/health` está acessível
+**Soluï¿½ï¿½o**: Verificar se `/health` estï¿½ acessï¿½vel
 ```bash
 curl https://SEU-APP.onrender.com/health
 ```
 
 ---
 
-## ?? Plano Free - Limitações
+## ?? Plano Free - Limitaï¿½ï¿½es
 
 ### Render Free Tier
-- ? **750 horas/mês** de runtime
+- ? **750 horas/mï¿½s** de runtime
 - ? **512 MB RAM**
 - ? **0.1 CPU**
-- ? **SSL grátis**
-- ?? **App dorme após 15min de inatividade**
-- ?? **Cold start: ~30s** (primeira requisição após dormir)
+- ? **SSL grï¿½tis**
+- ?? **App dorme apï¿½s 15min de inatividade**
+- ?? **Cold start: ~30s** (primeira requisiï¿½ï¿½o apï¿½s dormir)
 
 ### Dicas para Free Tier
-1. **Manter app acordado**: Use serviços como [UptimeRobot](https://uptimerobot.com/) para fazer ping a cada 10 minutos
-2. **Otimizar imagem**: Dockerfile já está otimizado com multi-stage build
-3. **Cache de pacotes**: NuGet packages são cacheados entre builds
+1. **Manter app acordado**: Use serviï¿½os como [UptimeRobot](https://uptimerobot.com/) para fazer ping a cada 10 minutos
+2. **Otimizar imagem**: Dockerfile jï¿½ estï¿½ otimizado com multi-stage build
+3. **Cache de pacotes**: NuGet packages sï¿½o cacheados entre builds
 
 ---
 
 ## ?? Monitoramento
 
-### Métricas Disponíveis (Render Dashboard)
+### Mï¿½tricas Disponï¿½veis (Render Dashboard)
 - CPU Usage
 - Memory Usage
 - Network
@@ -205,30 +210,30 @@ curl https://SEU-APP.onrender.com/health
 ???????????????     ???????????????   ???????????????
 ```
 
-**Fluxo automático:**
+**Fluxo automï¿½tico:**
 1. Desenvolvedor faz push para `main`
 2. GitHub notifica Render via webhook
 3. Render faz build da imagem Docker
-4. Deploy da nova versão
-5. Health check automático
+4. Deploy da nova versï¿½o
+5. Health check automï¿½tico
 
 ---
 
 ## ?? Exemplo de Request
 
-### Listar Usuários
+### Listar Usuï¿½rios
 ```bash
 curl -X GET "https://future-work-api.onrender.com/api/v1/users?pageNumber=1&pageSize=10" \
   -H "X-API-Key: FiapGS2024SecureKey"
 ```
 
-### Criar Usuário
+### Criar Usuï¿½rio
 ```bash
 curl -X POST "https://future-work-api.onrender.com/api/v1/users" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: FiapGS2024SecureKey" \
   -d '{
-    "nome": "João Silva",
+    "nome": "Joï¿½o Silva",
     "email": "joao@email.com",
     "senha": "senha123",
     "role": "USER"
@@ -237,21 +242,21 @@ curl -X POST "https://future-work-api.onrender.com/api/v1/users" \
 
 ---
 
-## ?? Segurança
+## ?? Seguranï¿½a
 
-### Boas Práticas no Render
+### Boas Prï¿½ticas no Render
 
-1. **Nunca commitar secrets no código**
-   - Use variáveis de ambiente
+1. **Nunca commitar secrets no cï¿½digo**
+   - Use variï¿½veis de ambiente
    - Senha do Oracle deve estar apenas nas Environment Variables
 
-2. **HTTPS automático**
+2. **HTTPS automï¿½tico**
    - Render fornece SSL/TLS gratuito
-   - Todas as requisições são HTTPS
+   - Todas as requisiï¿½ï¿½es sï¿½o HTTPS
 
 3. **API Key**
    - Configure via Environment Variables
-   - Não hardcode no código
+   - Nï¿½o hardcode no cï¿½digo
 
 4. **Connection String**
    - Use Environment Variables
@@ -261,7 +266,7 @@ curl -X POST "https://future-work-api.onrender.com/api/v1/users" \
 
 ## ?? Recursos Adicionais
 
-### Documentação Oficial
+### Documentaï¿½ï¿½o Oficial
 - [Render Docs](https://render.com/docs)
 - [Docker Deploy](https://render.com/docs/docker)
 - [.NET on Render](https://render.com/docs/deploy-dotnet)
@@ -280,24 +285,24 @@ Antes de fazer deploy:
 - [ ] .dockerignore criado
 - [ ] Arquivos commitados e pushed
 - [ ] Conta no Render criada
-- [ ] Repositório conectado
-- [ ] Variáveis de ambiente configuradas
+- [ ] Repositï¿½rio conectado
+- [ ] Variï¿½veis de ambiente configuradas
 - [ ] Deploy iniciado
 - [ ] Health check passou
-- [ ] Swagger acessível
+- [ ] Swagger acessï¿½vel
 - [ ] API Key funcionando
 - [ ] Endpoints testados
 
 ---
 
-## ?? Deploy Concluído!
+## ?? Deploy Concluï¿½do!
 
-Sua API está no ar em:
+Sua API estï¿½ no ar em:
 ```
 https://SEU-APP.onrender.com
 ```
 
-**Próximos passos:**
+**Prï¿½ximos passos:**
 1. Testar todos os endpoints
 2. Configurar monitoramento
 3. Documentar URL no README
@@ -309,6 +314,6 @@ https://SEU-APP.onrender.com
 
 **Desenvolvido para Global Solution - FIAP 2024**  
 **Deploy**: Render Free Tier  
-**Versão**: 1.0.0
+**Versï¿½o**: 1.0.0
 
 </div>

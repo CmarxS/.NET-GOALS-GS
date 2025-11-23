@@ -89,11 +89,15 @@ _logger.LogInformation("Buscando usuários - Página: {PageNumber}", pageNumber);
        return BadRequest(ModelState);
     }
 
-       // Verificar se email já existe
-       if (await _context.Users.AnyAsync(u => u.Email == createDto.Email))
-            {
-      return BadRequest(new { message = "Email já cadastrado" });
-       }
+       // Verificar se email já existe - Oracle compatible
+ var existingUser = await _context.Users
+   .Where(u => u.Email == createDto.Email)
+    .FirstOrDefaultAsync();
+   
+          if (existingUser != null)
+     {
+   return BadRequest(new { message = "Email já cadastrado" });
+ }
 
      var user = new User
    {
@@ -136,25 +140,29 @@ return CreatedAtAction(nameof(GetUser), new { id = user.Id }, userDto);
 
   if (!string.IsNullOrEmpty(updateDto.Email))
     {
- // Verificar se novo email já existe
-     if (await _context.Users.AnyAsync(u => u.Email == updateDto.Email && u.Id != id))
-     {
-         return BadRequest(new { message = "Email já cadastrado" });
-   }
-     user.Email = updateDto.Email;
-    }
+ // Verificar se novo email já existe - Oracle compatible
+    var existingUser = await _context.Users
+   .Where(u => u.Email == updateDto.Email && u.Id != id)
+  .FirstOrDefaultAsync();
+      
+     if (existingUser != null)
+        {
+            return BadRequest(new { message = "Email já cadastrado" });
+  }
+    user.Email = updateDto.Email;
+  }
 
-   if (!string.IsNullOrEmpty(updateDto.Senha))
-          user.SenhaHash = HashPassword(updateDto.Senha);
+     if (!string.IsNullOrEmpty(updateDto.Senha))
+            user.SenhaHash = HashPassword(updateDto.Senha);
 
-         if (!string.IsNullOrEmpty(updateDto.Role))
-    user.Role = updateDto.Role;
+  if (!string.IsNullOrEmpty(updateDto.Role))
+user.Role = updateDto.Role;
 
-        await _context.SaveChangesAsync();
+   await _context.SaveChangesAsync();
 
-   _logger.LogInformation("Usuário com ID {Id} atualizado com sucesso", id);
+     _logger.LogInformation("Usuário com ID {Id} atualizado com sucesso", id);
 
-            return Ok(MapToDto(user));
+        return Ok(MapToDto(user));
         }
 
         /// <summary>

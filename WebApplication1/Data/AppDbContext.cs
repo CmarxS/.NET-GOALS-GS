@@ -23,8 +23,10 @@ namespace WebApplication1.Data
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
-                entity.HasIndex(e => e.Email).IsUnique();
                 entity.HasIndex(e => e.CreatedAt);
+                
+                // Email único será validado em application level
+                entity.Property(e => e.Email).IsRequired();
             });
 
             // Configurar Category
@@ -32,8 +34,10 @@ namespace WebApplication1.Data
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
-                entity.HasIndex(e => e.Nome).IsUnique();
                 entity.HasIndex(e => e.Tipo);
+                
+                // Nome único será validado em application level
+                entity.Property(e => e.Nome).IsRequired();
             });
 
             // Configurar Goal
